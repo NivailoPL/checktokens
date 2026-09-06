@@ -37,9 +37,9 @@ def make_report(results: list[Result]) -> dict:
     }
 
 
-def format_report(results: list[Result]) -> str:
-    report = make_report(results)
-    lines = ["CheckTokens", "Tokenizer: o200k_base", ""]
+def display_names(results: list[Result]) -> list[str]:
+    """Return unambiguous, control-character-safe names for reports and the UI."""
+    output = []
     names = Counter(Path(result.path).name for result in results)
     for result in results:
         # Escape newlines/control characters in filenames to keep reports unambiguous.
@@ -49,6 +49,14 @@ def format_report(results: list[Result]) -> str:
             if any(ord(c) < 32 for c in display)
             else display
         )
+        output.append(name)
+    return output
+
+
+def format_report(results: list[Result]) -> str:
+    report = make_report(results)
+    lines = ["CheckTokens", "Tokenizer: o200k_base", ""]
+    for result, name in zip(results, display_names(results), strict=True):
         lines.append(
             f"{name} — {result.tokens:,} tokens"
             if result.tokens is not None
