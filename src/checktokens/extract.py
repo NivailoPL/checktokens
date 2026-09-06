@@ -45,7 +45,7 @@ def extract(path: Path) -> Extracted:
     if suffix == ".docx" or data.startswith(b"PK\x03\x04"):
         return extract_docx(data)
     if suffix in {".doc", ".pages", ".odt", ".epub"}:
-        raise ValueError("This document format is not supported in v0.1.")
+        raise ValueError("This document format is not supported yet.")
     return extract_plain(data)
 
 

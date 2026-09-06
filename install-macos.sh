@@ -26,7 +26,7 @@ if [ -z "$package" ] && [ -d "$script_dir/CheckTokens.app" ]; then
 else
   if [ -z "$package" ]; then
     # Version-pinned: code from a tag installs that tag, not a moving latest release.
-    release="https://github.com/NivailoPL/checktokens/releases/download/v0.1.0"
+    release="https://github.com/NivailoPL/checktokens/releases/download/v0.2.0"
     package="$task_tmp/CheckTokens-macos-$arch.zip"
     curl --fail --location --proto '=https' --tlsv1.2 "$release/$(basename "$package")" -o "$package"
     curl --fail --location --proto '=https' --tlsv1.2 "$release/SHA256SUMS" -o "$task_tmp/SHA256SUMS"

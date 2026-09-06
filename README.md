@@ -18,7 +18,7 @@ Alternatively, download or clone this repository, then run:
 bash install-macos.sh
 ```
 
-The repository installer downloads the **v0.1.0** package for your Mac and verifies its SHA-256. The extracted-package installer checks the included content manifest. Python, Homebrew and developer tools are **not** required for installation. Downloading the repository alone before the first release exists requires the developer build instructions below.
+The repository installer downloads the **v0.2.0** package for your Mac and verifies its SHA-256. The extracted-package installer checks the included content manifest. Python, Homebrew and developer tools are **not** required for installation. Downloading the repository alone before the first release exists requires the developer build instructions below.
 
 Installation is per user, without `sudo`. The app lives in `~/Library/Application Support/CheckTokens/CheckTokens.app`; the workflow lives in `~/Library/Services/Check Tokens.workflow`. You can move/delete the downloaded repository or ZIP after installation. Run the installer again to replace an existing CheckTokens installation.
 
