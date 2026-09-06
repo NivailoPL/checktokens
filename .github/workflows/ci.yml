@@ -1,0 +1,34 @@
+name: Test and package
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  macos:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-15, macos-15-intel]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run pytest -q
+      - run: uv run python scripts/build_macos.py
+      - run: uv run python scripts/smoke_bundle.py dist/CheckTokens.app/Contents/MacOS/checktokens
+      - uses: actions/upload-artifact@v4
+        with:
+          name: CheckTokens-${{ matrix.os }}
+          path: |
+            dist/CheckTokens-macos-*.zip
+            dist/SHA256SUMS

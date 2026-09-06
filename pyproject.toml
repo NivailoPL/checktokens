@@ -1,0 +1,38 @@
+[project]
+name = "checktokens"
+version = "0.1.0"
+description = "Count text tokens locally, straight from Finder."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = "MIT"
+dependencies = [
+  "tiktoken>=0.12,<1",
+  "striprtf>=0.0.29,<1",
+  "python-docx>=1.2,<2",
+  "pypdf>=6,<7",
+  "charset-normalizer>=3.4,<4",
+  "pyobjc-framework-Cocoa>=11,<13; sys_platform == 'darwin'",
+]
+
+[project.scripts]
+checktokens = "checktokens.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/checktokens"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10", "ruff>=0.12,<1", "pyinstaller>=6.16,<7", "reportlab>=4,<5"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
