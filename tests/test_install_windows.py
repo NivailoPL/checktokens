@@ -84,11 +84,11 @@ def test_install_update_uninstall(installation):
         "-InstallDir",
         str(directory),
     ]
-    run(uninstall)
+    result = run(uninstall)
     assert (directory / "unrelated.txt").read_text() == "keep"
     assert (directory / "current/personal.txt").read_text() == "keep too"
     assert not (directory / "current/app").exists()
-    assert not (shortcuts / "CheckTokens.lnk").exists()
+    assert not (shortcuts / "CheckTokens.lnk").exists(), (result.stdout, result.stderr)
 
 
 def test_bad_package_does_not_replace_installed_app(installation):

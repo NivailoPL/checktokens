@@ -23,6 +23,7 @@ $shortcut = Get-SafePath (Join-Path $state.shortcutDir 'CheckTokens.lnk')
 if (Test-Path -LiteralPath $shortcut) {
     $shell = New-Object -ComObject WScript.Shell
     $link = $shell.CreateShortcut($shortcut)
+    Write-Host ('SHORTCUT DIAGNOSTIC ' + (@{ actual=$link.TargetPath; expected=(Join-Path $current 'app\CheckTokens.exe') } | ConvertTo-Json -Compress))
     if ($link.TargetPath -eq (Join-Path $current 'app\CheckTokens.exe')) { Remove-Item -LiteralPath $shortcut }
 }
 Unregister-CheckTokens $state.registryRoot
