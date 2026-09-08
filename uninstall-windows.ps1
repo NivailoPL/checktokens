@@ -21,11 +21,9 @@ $targets = foreach ($relative in $files) {
 }
 $shortcut = Get-SafePath (Join-Path $state.shortcutDir 'CheckTokens.lnk')
 if (Test-Path -LiteralPath $shortcut) {
-    # WScript.Shell's TargetPath getter can lose characters outside the system code page.
-    $shell = New-Object -ComObject Shell.Application
-    $folder = $shell.NameSpace([IO.Path]::GetDirectoryName($shortcut))
-    $link = $folder.ParseName([IO.Path]::GetFileName($shortcut)).GetLink
-    if ($link.Path -eq (Join-Path $current 'app\CheckTokens.exe')) { Remove-Item -LiteralPath $shortcut }
+    $shell = New-Object -ComObject WScript.Shell
+    $link = $shell.CreateShortcut($shortcut)
+    if ($link.TargetPath -eq (Join-Path $current 'app\CheckTokens.exe')) { Remove-Item -LiteralPath $shortcut }
 }
 Unregister-CheckTokens $state.registryRoot
 foreach ($target in $targets) { if (Test-Path -LiteralPath $target -PathType Leaf) { Remove-Item -LiteralPath $target -Force } }
