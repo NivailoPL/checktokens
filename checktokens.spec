@@ -15,6 +15,7 @@ exe = EXE(pyz, analysis.scripts, [], exclude_binaries=True, name="checktokens",
           console=True, strip=False, upx=False, argv_emulation=False)
 collection = COLLECT(exe, analysis.binaries, analysis.datas, name="CheckTokens", upx=False)
 app = BUNDLE(collection, name="CheckTokens.app", bundle_identifier="pl.nivailo.checktokens",
+             icon=str(root / "assets/icon/checktokens.icns"),
              version="0.3.0", info_plist={
                  "CFBundleDisplayName": "CheckTokens",
                  "CFBundleShortVersionString": "0.3.0",

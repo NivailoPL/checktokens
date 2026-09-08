@@ -8,7 +8,7 @@ import AppKit as A
 import Foundation as F
 import objc
 
-from . import __version__
+from . import __version__, mark
 from .core import Result, display_names, format_report, make_report
 from .runner import run_batch
 
@@ -20,6 +20,40 @@ def font(size, weight=A.NSFontWeightRegular, digits=False):
         else A.NSFont.systemFontOfSize_weight_
     )
     return factory(size, weight)
+
+
+def srgb(rgb, alpha=1.0):
+    red, green, blue = rgb
+    return A.NSColor.colorWithSRGBRed_green_blue_alpha_(red / 255, green / 255, blue / 255, alpha)
+
+
+def mark_image(size):
+    """The app mark, drawn rather than bundled, so it stays sharp on any display."""
+
+    def draw(rect):
+        unit = size / 100
+        radius = mark.CORNER * unit
+        tile = A.NSBezierPath.bezierPathWithRoundedRect_xRadius_yRadius_(
+            ((0, 0), (size, size)), radius, radius
+        )
+        A.NSGradient.alloc().initWithStartingColor_endingColor_(
+            srgb(mark.TOP), srgb(mark.BOTTOM)
+        ).drawInBezierPath_angle_(tile, 90)
+        A.NSGraphicsContext.saveGraphicsState()
+        tile.addClip()
+        A.NSGradient.alloc().initWithStartingColor_endingColor_(
+            srgb((255, 255, 255), mark.GLOSS_ALPHA), srgb((255, 255, 255), 0)
+        ).drawInRect_angle_(((0, 0), (size, mark.GLOSS_HEIGHT * unit)), 90)
+        A.NSGraphicsContext.restoreGraphicsState()
+        for x, y, width, height, accent in mark.blocks(size):
+            srgb(mark.ACCENT if accent else mark.PAPER).setFill()
+            corner = height * unit / 2
+            A.NSBezierPath.bezierPathWithRoundedRect_xRadius_yRadius_(
+                ((x * unit, y * unit), (width * unit, height * unit)), corner, corner
+            ).fill()
+        return True
+
+    return A.NSImage.imageWithSize_flipped_drawingHandler_((size, size), True, draw)
 
 
 def text_attributes(size, color, *, digits=False, align=A.NSTextAlignmentLeft, wrap=False):
@@ -363,6 +397,10 @@ class ResultsController(F.NSObject):
         v["version"] = self.button(root, f"CheckTokens {__version__} · GitHub", "openGitHub:")
         v["version"].setBordered_(False)
         v["version"].setFont_(font(11))
+        v["version"].setImage_(mark_image(14))
+        v["version"].setImagePosition_(A.NSImageLeft)
+        v["version"].setImageScaling_(A.NSImageScaleNone)
+        v["version"].setImageHugsTitle_(True)
         v["version"].setHidden_(simple)
         v["copy"] = self.button(root, "Copy" if simple else "Copy results", "copy:")
         v["copy"].setKeyEquivalent_("c")
@@ -409,10 +447,10 @@ class ResultsController(F.NSObject):
             v["note"].setFrame_(
                 (
                     (margin, height - 39 if simple else height - 76),
-                    (270 if simple else width - 225, 18 if simple else 30),
+                    (270 if simple else width - 243, 18 if simple else 30),
                 )
             )
-            v["version"].setFrame_(((width - 205, height - 76), (185, 18)))
+            v["version"].setFrame_(((width - 223, height - 77), (203, 20)))
             v["copy"].setFrame_(
                 ((width - 198 if simple else margin, height - 48), (82 if simple else 132, 32))
             )

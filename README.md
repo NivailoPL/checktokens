@@ -145,6 +145,10 @@ bash install-macos.sh --package dist/CheckTokens-macos-arm64.zip
 
 Use `x86_64` instead of `arm64` for Intel. Build on macOS 15 for the supported minimum target. Local development on a newer macOS produces a locally verifiable build, while release packages come from the macOS 15 CI jobs. Installation tests compile a tiny fixture and therefore require Xcode Command Line Tools; end users do not need them.
 
+### Icon
+
+`src/checktokens/mark.py` holds the mark geometry. The results footer draws it live through AppKit and Qt, so it stays sharp on any display, and `uv run python scripts/make_icons.py` re-renders `assets/icon` from the same numbers: `checktokens.icns` for the Mac bundle, `checktokens.ico` for both Windows executables and the Explorer verb, and a 1024 px PNG. Marks below 40 points drop to two blocks per row, which keeps 16 and 32 px legible. Rendering is deterministic and a test compares the committed files against the current geometry, so run the script after changing `mark.py`. Writing `.icns` needs `iconutil` from macOS; elsewhere the committed file is left as it is.
+
 Dependencies are pinned in `uv.lock`. Tokenizer data and its SHA-256 are committed. Normal builds never download tokenizer data; the explicit developer maintenance script `scripts/vendor_tokenizer.py` refreshes it from the pinned upstream library.
 
 GitHub Actions tests, builds and runs the packaged CLI with **network access denied** for both Mac architectures and Windows x64. It uploads ZIPs and SHA-256 files as workflow artifacts; publication is a separate release step. For a release, wait for all three jobs on the release commit, combine the two Mac checksum files into one `SHA256SUMS`, and attach it alongside both Mac ZIPs. Attach `CheckTokens-windows-x64.zip` and its `SHA256SUMS-windows` separately.

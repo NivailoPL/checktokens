@@ -77,6 +77,7 @@ dependencies = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "pillow" },
     { name = "pyinstaller" },
     { name = "pytest" },
     { name = "reportlab" },
@@ -96,6 +97,7 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "pillow", specifier = ">=11,<14" },
     { name = "pyinstaller", specifier = ">=6.16,<7" },
     { name = "pytest", specifier = ">=8,<10" },
     { name = "reportlab", specifier = ">=4,<5" },

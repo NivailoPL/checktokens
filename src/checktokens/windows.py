@@ -3,14 +3,19 @@
 import queue
 import threading
 
-from PySide6.QtCore import QSettings, Qt, QTimer, QUrl
+from PySide6.QtCore import QRectF, QSettings, QSize, Qt, QTimer, QUrl
 from PySide6.QtGui import (
     QActionGroup,
     QColor,
     QDesktopServices,
     QFontMetrics,
+    QIcon,
     QKeySequence,
+    QLinearGradient,
+    QPainter,
+    QPainterPath,
     QPalette,
+    QPixmap,
     QShortcut,
 )
 from PySide6.QtWidgets import (
@@ -32,11 +37,48 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from . import __version__
+from . import __version__, mark
 from .core import Result, display_names, format_report, make_report
 from .runner import run_batch
 from .windows_style import PALETTES, stylesheet
 from .windows_table import FileDelegate, FileModel, ui_font
+
+
+def mark_pixmap(pixels, points=None):
+    """The app mark, drawn rather than bundled, so it stays sharp at any scale."""
+    points = pixels if points is None else points
+    unit = pixels / 100
+    pixmap = QPixmap(pixels, pixels)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(pixmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    tile = QPainterPath()
+    tile.addRoundedRect(QRectF(0, 0, pixels, pixels), mark.CORNER * unit, mark.CORNER * unit)
+    background = QLinearGradient(0, 0, 0, pixels)
+    background.setColorAt(0, QColor(*mark.TOP))
+    background.setColorAt(1, QColor(*mark.BOTTOM))
+    painter.fillPath(tile, background)
+    painter.setClipPath(tile)
+    gloss = QLinearGradient(0, 0, 0, mark.GLOSS_HEIGHT * unit)
+    gloss.setColorAt(0, QColor(255, 255, 255, round(255 * mark.GLOSS_ALPHA)))
+    gloss.setColorAt(1, QColor(255, 255, 255, 0))
+    painter.fillRect(QRectF(0, 0, pixels, mark.GLOSS_HEIGHT * unit), gloss)
+    painter.setPen(Qt.PenStyle.NoPen)
+    for x, y, width, height, accent in mark.blocks(points):
+        painter.setBrush(QColor(*(mark.ACCENT if accent else mark.PAPER)))
+        radius = height * unit / 2
+        painter.drawRoundedRect(
+            QRectF(x * unit, y * unit, width * unit, height * unit), radius, radius
+        )
+    painter.end()
+    return pixmap
+
+
+def mark_icon(sizes, points=None):
+    icon = QIcon()
+    for size in sizes:
+        icon.addPixmap(mark_pixmap(size, points))
+    return icon
 
 
 def label(text="", name=""):
@@ -187,6 +229,8 @@ class ResultsWindow(QWidget):
         foot.addWidget(self.explanation, 1)
         self.github = QPushButton(f"CheckTokens {__version__} · GitHub")
         self.github.setObjectName("github")
+        self.github.setIcon(mark_icon((14, 28, 42), 14))
+        self.github.setIconSize(QSize(14, 14))
         self.github.clicked.connect(
             lambda: QDesktopServices.openUrl(QUrl("https://github.com/NivailoPL/checktokens"))
         )
@@ -437,6 +481,7 @@ def show_results(paths):
     app = QApplication.instance() or QApplication([])
     app.setStyle("Fusion")
     app.setFont(ui_font(13))
+    app.setWindowIcon(mark_icon((16, 24, 32, 48, 64, 128, 256)))
     if not paths:
         paths, _ = QFileDialog.getOpenFileNames(None, "Choose files to count", "", "All files (*)")
         if not paths:
