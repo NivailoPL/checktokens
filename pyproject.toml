@@ -1,7 +1,7 @@
 [project]
 name = "checktokens"
-version = "0.2.0"
-description = "Count text tokens locally, straight from Finder."
+version = "0.3.0"
+description = "Count text tokens locally, straight from Finder or Windows Explorer."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 license = "MIT"
@@ -12,6 +12,7 @@ dependencies = [
   "pypdf>=6,<7",
   "charset-normalizer>=3.4,<4",
   "pyobjc-framework-Cocoa>=11,<13; sys_platform == 'darwin'",
+  "PySide6-Essentials==6.11.2; sys_platform == 'win32'",
 ]
 
 [project.scripts]
@@ -33,6 +34,7 @@ testpaths = ["tests"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
+extend-exclude = ["native/windows/qt-licenses"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]

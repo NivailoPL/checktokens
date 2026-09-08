@@ -1,0 +1,1 @@
+Qt Base 6.11.2 license texts and third-party attribution files, copied unchanged from https://github.com/qt/qtbase/tree/v6.11.2 . This collection includes notices for optional Qt components which may not be bundled. Qt for Python and Shiboken 6.11.2 use LGPL-3.0; sources: https://github.com/qt/pyside-setup/tree/v6.11.2 .

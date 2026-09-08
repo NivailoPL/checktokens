@@ -39,12 +39,13 @@ def test_utf16_and_special_token_text(tmp_path):
     path = tmp_path / "notes"
     path.write_bytes("hello world".encode("utf-16"))
     assert count_file(str(path)).tokens == 2
-    path.write_text("<|endoftext|> Zażółć gęślą jaźń 🐈")
+    path.write_text("<|endoftext|> Zażółć gęślą jaźń 🐈", encoding="utf-8")
     assert count_file(str(path)).tokens > 0
 
 
 def test_cli_mixed_batch(tmp_path):
-    path = tmp_path / 'a $file " --.txt'
+    name = "a $file & ' --.txt" if sys.platform == "win32" else 'a $file " --.txt'
+    path = tmp_path / name
     path.write_text("hello world")
     command = [
         sys.executable,

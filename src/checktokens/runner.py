@@ -5,6 +5,7 @@ import subprocess
 import sys
 import threading
 import time
+from pathlib import Path
 
 from .core import Result
 
@@ -12,6 +13,8 @@ TIMEOUT_SECONDS = 30
 
 
 def worker_command(path: str) -> list[str]:
+    if sys.platform == "win32" and getattr(sys, "frozen", False):
+        return [str(Path(sys.executable).with_name("checktokens-cli.exe")), "--_worker", "--", path]
     prefix = (
         [sys.executable] if getattr(sys, "frozen", False) else [sys.executable, "-m", "checktokens"]
     )
@@ -23,7 +26,11 @@ def run_file(path: str, cancel: threading.Event, timeout: float = TIMEOUT_SECOND
         return Result(path, error="Cancelled.")
     try:
         process = subprocess.Popen(
-            worker_command(path), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+            worker_command(path),
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0,
         )
     except OSError:
         return Result(path, error="Could not start the document worker.")

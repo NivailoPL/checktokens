@@ -13,7 +13,7 @@ def main():
     parser.add_argument("--version", action="version", version=__version__)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--json", action="store_true", help="Print a JSON report.")
-    mode.add_argument("--gui", action="store_true", help="Show the macOS results window.")
+    mode.add_argument("--gui", action="store_true", help="Show the native results window.")
     parser.add_argument("--_worker", action="store_true", help=argparse.SUPPRESS)
     parser.add_argument("files", nargs="*", metavar="FILE")
     args = parser.parse_args()
@@ -25,9 +25,12 @@ def main():
     if not args.files and not args.json and getattr(sys, "frozen", False):
         args.gui = True
     if args.gui:
-        if sys.platform != "darwin":
-            parser.error("The graphical interface currently requires macOS.")
-        from .macos import show_results
+        if sys.platform == "darwin":
+            from .macos import show_results
+        elif sys.platform == "win32":
+            from .windows import show_results
+        else:
+            parser.error("The graphical interface requires macOS or Windows.")
 
         return show_results(args.files)
     if not args.files:
