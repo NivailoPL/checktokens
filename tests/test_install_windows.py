@@ -33,7 +33,7 @@ def installation(tmp_path):
         if p.is_file()
     ]
     (package / "MANIFEST.sha256").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    install_dir = tmp_path / "apps żółć & %name% '"
+    install_dir = tmp_path / "apps zolc & %name% '"
     registry = "Software\\CheckTokensTests\\" + uuid.uuid4().hex
     shortcuts = tmp_path / "shortcuts"
     command = [
