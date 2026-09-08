@@ -85,6 +85,7 @@ def test_install_update_uninstall(installation):
         str(directory),
     ]
     result = run(uninstall)
+    print(result.stdout)
     assert (directory / "unrelated.txt").read_text() == "keep"
     assert (directory / "current/personal.txt").read_text() == "keep too"
     assert not (directory / "current/app").exists()
