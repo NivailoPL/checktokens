@@ -64,7 +64,8 @@ def run(command, success=True):
     return result
 
 
-def test_install_update_uninstall(installation):
+@pytest.mark.parametrize("retarget_shortcut", [False, True])
+def test_install_update_uninstall(installation, retarget_shortcut):
     import winreg
 
     command, directory, registry, shortcuts, package = installation
@@ -79,17 +80,31 @@ def test_install_update_uninstall(installation):
     ) as key:
         assert winreg.QueryValueEx(key, "DelegateExecute")[0].startswith("{")
     assert (shortcuts / "CheckTokens.lnk").exists()
+    shortcut_dir = str(shortcuts).replace("'", "''")
+    expected = str(directory / "current/app/CheckTokens.exe").replace("'", "''")
+    # Read the actual Unicode target; WScript.Shell's getter can transliterate it.
+    inspect = (
+        "$ErrorActionPreference = 'Stop'; "
+        "$shell = New-Object -ComObject Shell.Application; "
+        f"$link = $shell.NameSpace('{shortcut_dir}').ParseName('CheckTokens.lnk').GetLink; "
+        f"if ($link.Path -cne '{expected}') {{ throw 'Shortcut target lost Unicode characters' }}; "
+    )
+    if retarget_shortcut:
+        inspect += "$link.Path = $env:SystemRoot + '\\notepad.exe'; $link.Save(); "
+    run(command[:4] + ["-Command", inspect])
     uninstall = command[:5] + [
         str(directory / "current/uninstall-windows.ps1"),
         "-InstallDir",
         str(directory),
     ]
     result = run(uninstall)
-    print(result.stdout)
     assert (directory / "unrelated.txt").read_text() == "keep"
     assert (directory / "current/personal.txt").read_text() == "keep too"
     assert not (directory / "current/app").exists()
-    assert not (shortcuts / "CheckTokens.lnk").exists(), (result.stdout, result.stderr)
+    assert (shortcuts / "CheckTokens.lnk").exists() == retarget_shortcut, (
+        result.stdout,
+        result.stderr,
+    )
 
 
 def test_bad_package_does_not_replace_installed_app(installation):
