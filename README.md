@@ -1,12 +1,14 @@
+<img src="assets/icon/checktokens-1024.png" alt="" width="88">
+
 # CheckTokens
 
 Count text tokens locally, straight from Finder or Windows Explorer. Select files, right-click, choose **Check Tokens**, and get individual counts and a total in one native window. macOS may group the item under **Services** when many services are available.
 
 macOS 15+ (Apple Silicon and Intel) · Windows 10 x64 (build 19044+) · No account or API key · Offline
 
-## Version 0.3.0
+## Version 0.3.1
 
-CheckTokens now supports Windows, including per-user installation, Explorer's classic context menu and a macOS-inspired results window. See the [changelog](CHANGELOG.md) for the release changes.
+CheckTokens now has its own application icon on both platforms, in Finder and the Dock, in Explorer's context menu and the Windows taskbar, and as a small mark before the name in the **Details** footer. See the [changelog](CHANGELOG.md) for the release changes.
 
 **Simple** keeps the total and per-file results compact:
 
@@ -52,7 +54,7 @@ Alternatively, download or clone this repository, then run:
 bash install-macos.sh
 ```
 
-The repository installer downloads the **v0.3.0** package for your Mac and verifies its SHA-256. It requires that release's assets to have been published; pushing source code alone does not publish an installable package. Until then, use a published release's installer or build locally. The extracted-package installer checks the included content manifest. Python, Homebrew and developer tools are **not** required for installation.
+The repository installer downloads the **v0.3.1** package for your Mac and verifies its SHA-256. It requires that release's assets to have been published; pushing source code alone does not publish an installable package. Until then, use a published release's installer or build locally. The extracted-package installer checks the included content manifest. Python, Homebrew and developer tools are **not** required for installation.
 
 Installation is per user, without `sudo`. The app lives in `~/Library/Application Support/CheckTokens/CheckTokens.app`; the workflow lives in `~/Library/Services/Check Tokens.workflow`. You can move/delete the downloaded repository or ZIP after installation. Run the installer again to replace an existing CheckTokens installation.
 
@@ -155,7 +157,7 @@ GitHub Actions tests, builds and runs the packaged CLI with **network access den
 
 Verification: native window and packaged CLI tested locally on Apple Silicon/macOS 26.5.2. CI covers macOS 15 ARM and Intel; check the workflow result for the exact release commit. Intel Finder UI has not been manually verified.
 
-Windows verification: installed app and registered Explorer COM command tested on Windows 10 Pro x64 build 19044, including multi-file selections, Simple/Details and a failed-file report. Real-widget previews cover dark/light themes at 100%, 150% and 200% scaling. The packaged CLI was checked with DOCX/PDF/RTF, Unicode paths and an empty tokenizer cache. Windows 11 and macOS 0.3.0 still require platform-specific acceptance checks.
+Windows verification: installed app and registered Explorer COM command tested on Windows 10 Pro x64 build 19044, including multi-file selections, Simple/Details and a failed-file report. Real-widget previews cover dark/light themes at 100%, 150% and 200% scaling. The packaged CLI was checked with DOCX/PDF/RTF, Unicode paths and an empty tokenizer cache. Windows 11 and macOS 0.3.1 still require platform-specific acceptance checks.
 
 ## License
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.1 — 2026-09-08
+
+- Add an application icon. The macOS bundle carries an `.icns`; both Windows executables embed an `.ico`, which Explorer's **Check Tokens** entry and the taskbar reuse. Neither platform falls back to a default system icon any more.
+- Show the mark before the name and version in the **Details** footer on both platforms. It is drawn through AppKit and Qt rather than loaded from a file, so it stays sharp on any display.
+- Generate every icon from one geometry in `checktokens.mark` with `scripts/make_icons.py`. Rendering is deterministic and a test compares the committed files against the current geometry. Below 40 points the mark carries two blocks per row instead of three, which keeps 16 and 32 px legible.
+
 ## 0.3.0 — 2026-09-08
 
 ### Windows support
