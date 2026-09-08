@@ -137,10 +137,14 @@ def main():
         for p in sorted(stage.rglob("*"))
         if p.is_file()
     ]
-    (stage / "MANIFEST.sha256").write_text("\n".join(manifest) + "\n", encoding="utf-8")
+    manifest_text = "\n".join(manifest) + "\n"
+    (stage / "MANIFEST.sha256").write_text(manifest_text, encoding="utf-8", newline="\n")
     archive = Path(shutil.make_archive(str(ROOT / "dist/CheckTokens-windows-x64"), "zip", stage))
     checksum = hashlib.sha256(archive.read_bytes()).hexdigest()
-    (ROOT / "dist/SHA256SUMS-windows").write_text(f"{checksum}  {archive.name}\n", encoding="utf-8")
+    # Keep LF: Python would write CRLF here on Windows, which "shasum -c" rejects elsewhere.
+    (ROOT / "dist/SHA256SUMS-windows").write_text(
+        f"{checksum}  {archive.name}\n", encoding="utf-8", newline="\n"
+    )
     print(f"Built {archive.name}: {checksum}")
 
 
